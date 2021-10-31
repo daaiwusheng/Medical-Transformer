@@ -16,6 +16,7 @@ import pandas as pd
 from numbers import Number
 from typing import Container
 from collections import defaultdict
+from dataprocess.kaggle_data_provider import *
 
 
 def to_long_tensor(pic):
@@ -230,6 +231,39 @@ class Image2D(Dataset):
         # image = np.swapaxes(image,2,0)
 
         return image, image_filename
+
+class KaggleData(Dataset):
+    def __init__(self, is_train = True, dataset_path: str, transform: Callable = None):
+        self.data_provider = KaggleDataProvider()
+        self.images = []
+        self.masks = []
+        if is_train:
+            self.images = self.data_provider.train_images
+            self.masks = self.data_provider.train_labels
+        else:
+            self.images = self.data_provider.validate_images
+            self.masks = self.data_provider.validate_labels
+
+        if transform:
+            self.transform = transform
+        else:
+            self.transform = T.ToTensor()
+
+    def __len__(self):
+        return len(self.masks)
+
+    def __getitem__(self, idx):
+        image = self.images[idx]
+        mask = self.masks[idx]
+        image, mask = correct_dims(image, mask)
+        # print(image.shape)
+        mask[mask < 127] = 0
+        mask[mask >= 127] = 1
+
+
+
+        return image, image_filename
+
 
 def chk_mkdir(*paths: Container) -> None:
     """

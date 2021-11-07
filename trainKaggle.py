@@ -99,8 +99,8 @@ if args.crop is not None:
 else:
     crop = None
 
-tf_train = JointTransform2D(crop=crop, p_flip=0.5, color_jitter_params=None, long_mask=True)
-tf_val = JointTransform2D(crop=crop, p_flip=0, color_jitter_params=None, long_mask=True)
+tf_train = None#JointTransform2D(crop=crop, p_flip=0.5, color_jitter_params=None, long_mask=True)
+tf_val = None#JointTransform2D(crop=crop, p_flip=0, color_jitter_params=None, long_mask=True)
 train_dataset = KaggleData(is_train=True, joint_transform=tf_train,
                            image_size=imgsize)  # ImageToImage2D(args.train_dataset, tf_train)
 val_dataset = KaggleData(is_train=False, joint_transform=tf_val, image_size=imgsize)   # ImageToImage2D(args.val_dataset, tf_val)

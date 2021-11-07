@@ -261,8 +261,10 @@ class KaggleData(Dataset):
         # print(image.shape)
         mask[mask < 127] = 0
         mask[mask >= 127] = 1
-        if self.joint_transform:
-            image, mask = self.joint_transform(image, mask)
+        image = torch.FloatTensor(image)
+        mask = torch.tensor(mask)
+        # if self.joint_transform:
+        #     image, mask = self.joint_transform(image, mask)
 
         return image, mask
 

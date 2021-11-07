@@ -54,7 +54,11 @@ class KaggleDataProvider(object):
             self.pad_h = self.img_size - m_h
 
     def get_train_val_data(self):
+        i = 0
         for img_id, label in self.dict_imageID_label.items():
+            if i == 1:
+                break
+            i += 1
             # first padding
             label_array = np.array(label)
 
@@ -62,6 +66,7 @@ class KaggleDataProvider(object):
             label = label_pad.tolist()
             image = self.dict_imageID_image[img_id]
             image_array = np.array(image)
+            image_array = np.array(normalization(image_array), dtype=float)
             image_pad = np.pad(image_array, ((0, self.pad_h), (0, self.pad_w)), 'constant', constant_values=(0, 0))
             image = image_pad.tolist()
 
@@ -75,8 +80,8 @@ class KaggleDataProvider(object):
                     label = np.array(label)
                     image = np.array(image)
 
-                    mask_clip = label[start_r:end_r,start_col:end_col]
-                    image_clip = image[start_r:end_r,start_col:end_col]
+                    mask_clip = label[start_r:end_r, start_col:end_col]
+                    image_clip = image[start_r:end_r, start_col:end_col]
                     mask_clip = mask_clip.tolist()
                     image_clip = image_clip.tolist()
                     # print(np.array(mask_clip).shape)

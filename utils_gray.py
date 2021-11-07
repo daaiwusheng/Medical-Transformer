@@ -234,8 +234,8 @@ class Image2D(Dataset):
 
 
 class KaggleData(Dataset):
-    def __init__(self, is_train=True, dataset_path: str = None, joint_transform: Callable = None):
-        self.data_provider = KaggleDataProvider()
+    def __init__(self, is_train=True, dataset_path: str = None, joint_transform: Callable = None,image_size=64):
+        self.data_provider = KaggleDataProvider(image_size=64)
         self.images = []
         self.masks = []
         if is_train:

@@ -42,7 +42,7 @@ parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                     help='momentum')
 parser.add_argument('--weight-decay', '--wd', default=1e-5, type=float,
                     metavar='W', help='weight decay (default: 1e-5)')
-parser.add_argument('--train_dataset', required=True, type=str)
+parser.add_argument('--train_dataset', required=False, type=str)
 parser.add_argument('--val_dataset', type=str)
 parser.add_argument('--save_freq', type=int, default=10)
 
@@ -105,7 +105,7 @@ tf_val = JointTransform2D(crop=crop, p_flip=0, color_jitter_params=None, long_ma
 train_dataset = KaggleData(is_train=True, joint_transform=tf_train,
                            image_size=imgsize)  # ImageToImage2D(args.train_dataset, tf_train)
 val_dataset = KaggleData(is_train=False, joint_transform=tf_val, image_size=imgsize)   # ImageToImage2D(args.val_dataset, tf_val)
-predict_dataset = Image2D(args.val_dataset)
+# predict_dataset = Image2D(args.val_dataset)
 dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
 valloader = DataLoader(val_dataset, 1, shuffle=True)
 

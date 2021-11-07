@@ -246,7 +246,7 @@ class KaggleData(Dataset):
             self.masks = self.data_provider.validate_labels
 
         if joint_transform:
-            self.transform = joint_transform
+            self.joint_transform = joint_transform
         else:
             to_tensor = T.ToTensor()
             self.joint_transform = lambda x, y: (to_tensor(x), to_tensor(y))
@@ -255,8 +255,8 @@ class KaggleData(Dataset):
         return len(self.masks)
 
     def __getitem__(self, idx):
-        image = self.images[idx]
-        mask = self.masks[idx]
+        image = np.array(self.images[idx])
+        mask = np.array(self.masks[idx])
         image, mask = correct_dims(image, mask)
         # print(image.shape)
         mask[mask < 127] = 0

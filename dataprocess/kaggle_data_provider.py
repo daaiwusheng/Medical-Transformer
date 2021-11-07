@@ -18,18 +18,6 @@ class KaggleDataProvider(object):
         self.train_labels = []
         self.validate_images = []
         self.validate_labels = []
-        data_exist_bool = os.path.exists(self.save_img_dir) & os.path.exists(self.save_mask_dir)
-
-        if data_exist_bool:
-            self.labels = load_dict_from_csv(self.save_mask_dir)
-            self.images = load_dict_from_csv(self.save_img_dir)
-            length_data = len(self.labels)
-            train_length = int(split_factor * length_data)
-            self.train_images = self.images[:length_data]
-            self.train_labels = self.labels[:length_data]
-            self.validate_images = self.images[length_data:]
-            self.validate_labels = self.labels[length_data:]
-            return
 
         self.img_size = image_size
         self.image_provider = TrainImageHandler()
@@ -46,7 +34,7 @@ class KaggleDataProvider(object):
         self.get_train_val_data()
 
     def calculate_clip_size(self):
-        image_width = 702
+        image_width = 704
         image_height = 520
 
         threshold = round(0.5 * self.img_size)
@@ -54,21 +42,22 @@ class KaggleDataProvider(object):
         m_h = image_height % self.img_size
 
         if m_w < threshold:
-            self.column = image_width / self.img_size
+            self.column = image_width // self.img_size
         else:
-            self.column = image_width / self.img_size + 1
+            self.column = image_width // self.img_size + 1
             self.pad_w = self.img_size - m_w
 
         if m_h < threshold:
-            self.row = image_height / self.img_size
+            self.row = image_height // self.img_size
         else:
-            self.row = image_height / self.img_size + 1
+            self.row = image_height // self.img_size + 1
             self.pad_h = self.img_size - m_h
 
     def get_train_val_data(self):
         for img_id, label in self.dict_imageID_label.items():
             # first padding
             label_array = np.array(label)
+
             label_pad = np.pad(label_array, ((0, self.pad_h), (0, self.pad_w)), 'constant', constant_values=(0, 0))
             label = label_pad.tolist()
             image = self.dict_imageID_image[img_id]
@@ -88,11 +77,9 @@ class KaggleDataProvider(object):
                     self.labels.append(mask_clip)
                     self.images.append(image_clip)
 
-        save_dict_as_csv(self.save_mask_dir, self.labels)
-        save_dict_as_csv(self.save_img_dir, self.images)
         length_data = len(self.labels)
         train_length = int(split_factor * length_data)
-        self.train_images = self.images[:length_data]
-        self.train_labels = self.labels[:length_data]
-        self.validate_images = self.images[length_data:]
-        self.validate_labels = self.labels[length_data:]
+        self.train_images = self.images[:train_length]
+        self.train_labels = self.labels[:train_length]
+        self.validate_images = self.images[train_length:]
+        self.validate_labels = self.labels[train_length:]

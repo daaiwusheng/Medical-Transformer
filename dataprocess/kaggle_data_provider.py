@@ -79,8 +79,8 @@ class KaggleDataProvider(object):
                     image_clip = image[start_r:end_r,start_col:end_col]
                     mask_clip = mask_clip.tolist()
                     image_clip = image_clip.tolist()
-                    print(np.array(mask_clip).shape)
-                    print(np.array(image_clip).shape)
+                    # print(np.array(mask_clip).shape)
+                    # print(np.array(image_clip).shape)
                     # print(np.array(label).shape)
                     # print(np.array(image).shape)
                     self.labels.append(mask_clip)

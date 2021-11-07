@@ -2,7 +2,7 @@ import os
 import numpy as np
 import torch
 
-from skimage import io,color
+from skimage import io, color
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms as T
@@ -58,6 +58,7 @@ class JointTransform2D:
             torchvision.transforms.RandomAffine.
         long_mask: bool, if True, returns the mask as LongTensor in label-encoded format.
     """
+
     def __init__(self, crop=(32, 32), p_flip=0.5, color_jitter_params=(0.1, 0.1, 0.1, 0.1),
                  p_random_affine=0, long_mask=False):
         self.crop = crop
@@ -144,22 +145,21 @@ class ImageToImage2D(Dataset):
 
     def __getitem__(self, idx):
         image_filename = self.images_list[idx]
-        #print(image_filename[: -3])
+        # print(image_filename[: -3])
         # read image
         # print(os.path.join(self.input_path, image_filename))
         # print(os.path.join(self.output_path, image_filename[: -3] + "png"))
         # print(os.path.join(self.input_path, image_filename))
-        image = cv2.imread(os.path.join(self.input_path, image_filename),0)
+        image = cv2.imread(os.path.join(self.input_path, image_filename), 0)
         # print(image.shape)
         # read mask image
-        mask = cv2.imread(os.path.join(self.output_path, image_filename[: -3] + "png"),0)
-        
+        mask = cv2.imread(os.path.join(self.output_path, image_filename[: -3] + "png"), 0)
+
         # correct dimensions if needed
         image, mask = correct_dims(image, mask)
         # print(image.shape)
-        mask[mask<127] = 0
-        mask[mask>=127] = 1
-
+        mask[mask < 127] = 0
+        mask[mask >= 127] = 1
 
         if self.joint_transform:
             image, mask = self.joint_transform(image, mask)
@@ -220,7 +220,7 @@ class Image2D(Dataset):
 
         image_filename = self.images_list[idx]
 
-        image = cv2.imread(os.path.join(self.input_path, image_filename),0)
+        image = cv2.imread(os.path.join(self.input_path, image_filename), 0)
 
         # image = np.transpose(image,(2,0,1))
 
@@ -232,8 +232,9 @@ class Image2D(Dataset):
 
         return image, image_filename
 
+
 class KaggleData(Dataset):
-    def __init__(self, is_train = True, dataset_path: str, transform: Callable = None):
+    def __init__(self, is_train=True, dataset_path: str = None, joint_transform: Callable = None):
         self.data_provider = KaggleDataProvider()
         self.images = []
         self.masks = []
@@ -244,10 +245,11 @@ class KaggleData(Dataset):
             self.images = self.data_provider.validate_images
             self.masks = self.data_provider.validate_labels
 
-        if transform:
-            self.transform = transform
+        if joint_transform:
+            self.transform = joint_transform
         else:
-            self.transform = T.ToTensor()
+            to_tensor = T.ToTensor()
+            self.joint_transform = lambda x, y: (to_tensor(x), to_tensor(y))
 
     def __len__(self):
         return len(self.masks)
@@ -259,10 +261,10 @@ class KaggleData(Dataset):
         # print(image.shape)
         mask[mask < 127] = 0
         mask[mask >= 127] = 1
+        if self.joint_transform:
+            image, mask = self.joint_transform(image, mask)
 
-
-
-        return image, image_filename
+        return image, mask
 
 
 def chk_mkdir(*paths: Container) -> None:
@@ -314,4 +316,4 @@ class MetricList:
         if not normalize:
             return self.results
         else:
-            return {key: value/normalize for key, value in self.results.items()}
+            return {key: value / normalize for key, value in self.results.items()}

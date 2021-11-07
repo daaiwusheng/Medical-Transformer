@@ -71,9 +71,18 @@ class KaggleDataProvider(object):
                 end_r = start_r + self.img_size
                 for col in range(self.column):  # second dimension
                     start_col = col * self.img_size
-                    end_col = col * self.img_size
-                    mask_clip = label[start_r:end_r][start_col:end_col]
-                    image_clip = image[start_r:end_r][start_col:end_col]
+                    end_col = start_col + self.img_size
+                    label = np.array(label)
+                    image = np.array(image)
+
+                    mask_clip = label[start_r:end_r,start_col:end_col]
+                    image_clip = image[start_r:end_r,start_col:end_col]
+                    mask_clip = mask_clip.tolist()
+                    image_clip = image_clip.tolist()
+                    print(np.array(mask_clip).shape)
+                    print(np.array(image_clip).shape)
+                    # print(np.array(label).shape)
+                    # print(np.array(image).shape)
                     self.labels.append(mask_clip)
                     self.images.append(image_clip)
 

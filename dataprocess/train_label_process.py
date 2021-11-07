@@ -25,7 +25,7 @@ class TrainLabelsProcessor(object):
         else:
             self.dict_imgID_rel = load_dict_from_csv(self.save_mask_dir)
             for img_id, rles in self.dict_imgID_rel.items():
-                current_mask = rle_decode(rles, (704, 520))
+                current_mask = rle_decode(rles, (520, 704))
                 self.dict_imgID_mask[img_id] = current_mask
 
     def __len__(self):

@@ -2,6 +2,7 @@
 
 import torch
 import lib
+from lib.models.axialnet import *
 import argparse
 import torch
 import torchvision
@@ -88,11 +89,9 @@ imgsize = 64
 
 if gray_ == "yes":
     from utils_gray import JointTransform2D, ImageToImage2D, Image2D, KaggleData
-
     imgchant = 1
 else:
     from utils import JointTransform2D, ImageToImage2D, Image2D
-
     imgchant = 3
 
 if args.crop is not None:
